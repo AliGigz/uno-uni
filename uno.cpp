@@ -63,7 +63,9 @@ int main()
 	tableColor = currentCardOnTable.getColor();
 	do
 	{
+		// show player cards
 		players[turn].showCards();
+		// show the card which is on the table
 		string text = "";
 		if (currentCardOnTable.getNumber() >= 10)
 			text += currentCardOnTable.getAction();
@@ -72,6 +74,7 @@ int main()
 		changeTextColor(text, tableColor);
 		cout << "current card on the table: " + text;
 
+		// ask for a card to be played
 		do
 		{
 			cout << endl << "player " << (turn + 1) << " -> " << "choose a card (0 to pick a card): ";
@@ -93,6 +96,7 @@ int main()
 			tableColor = currentCardOnTable.getColor();
 			players[turn].removeCard(option, &deck);
 
+			// do the action cards
 			if (currentCardOnTable.getAction() == "reverse")
 				if (order == 0)
 					order = 1;
@@ -150,7 +154,9 @@ int main()
 				}
 			}
 		}
+
 		setWinner(players);
+		// change turn
 		if (order == 0)
 		{
 			turn++;
@@ -164,6 +170,7 @@ int main()
 				turn = 3;
 		}
 	} while (winner == "");
+
 	cout << "winner is " << (turn + 1) << endl;
 	return 0;
 }
