@@ -5,8 +5,8 @@
 Card::Card() { }
 Card::Card(int number, std::string color)
 {
-	this->setNumber(number);
 	this->setColor(color);
+	this->setNumber(number);
 }
 void Card::setNumber(int number)
 {
@@ -23,9 +23,11 @@ void Card::setNumber(int number)
 			break;
 		case 13:
 			this->Action = "wild";
+			this->Color = "none";
 			break;
 		case 14:
 			this->Action = "wild draw four";
+			this->Color = "none";
 			break;
 	}
 }
@@ -45,5 +47,13 @@ std::string Card::getColor()
 std::string Card::getAction()
 {
 	return this->Action;
+}
+
+void fillDeck(std::vector<Card> *deck)
+{
+	for (int i = 1; i <= 14; i++) deck->push_back(Card(i, "red"));
+	for (int i = 1; i <= 14; i++) deck->push_back(Card(i, "blue"));
+	for (int i = 1; i <= 14; i++) deck->push_back(Card(i, "green"));
+	for (int i = 1; i <= 14; i++) deck->push_back(Card(i, "yellow"));
 }
 

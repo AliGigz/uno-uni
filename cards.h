@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <vector>
 
 
 /*
@@ -24,4 +25,6 @@ class Card
 		std::string getColor();
 		std::string getAction();
 };
+
+void fillDeck(std::vector<Card>*);
 

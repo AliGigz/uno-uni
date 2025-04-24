@@ -13,6 +13,9 @@ void Player::addCard(std::vector<Card>* deck)
 	this->Cards.push_back((*deck)[index]);
 	deck->erase(deck->begin() + index);
 	this->CardsCount++;
+	// refill the deck if it's empty
+	if (deck->size() == 0)
+		fillDeck(deck);
 }
 void Player::removeCard(int index, std::vector<Card>* deck)
 {
