@@ -1,8 +1,10 @@
 #include <cstdlib>
 #include <iostream>
+#include <string>
 #include <vector>
 #include "players.h"
 #include "cards.h"
+#include "colors.h"
 
 
 void Player::addCard(std::vector<Card>* deck)
@@ -27,11 +29,14 @@ void Player::showCards()
 {
 	for (Card c : this->Cards)
 	{
-		std::cout << c.getColor() << " ";
+		std::string text = "";
+		text = c.getColor() + " ";
 		if (c.getNumber() >= 10)
-			std::cout << c.getAction();
+			text += c.getAction();
 		else
-			std::cout << c.getNumber();
+			text += std::to_string(c.getNumber());
+		changeTextColor(text, c.getColor());
+		std::cout << text;
 		std::cout << std::endl;
 	}
 }

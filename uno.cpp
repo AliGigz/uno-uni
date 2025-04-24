@@ -28,6 +28,15 @@ int main()
 	for (int i = 0; i < 7; i++) players[2].addCard(&deck);
 	for (int i = 0; i < 7; i++) players[3].addCard(&deck);
 
+	players[0].showCards();
+	cout << endl;
+	players[1].showCards();
+	cout << endl;
+	players[2].showCards();
+	cout << endl;
+	players[3].showCards();
+	cout << endl;
+
 	return 0;
 }
 

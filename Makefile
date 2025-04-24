@@ -1,3 +1,3 @@
 compile:
-	g++ -o uno uno.cpp cards.cpp players.cpp
+	g++ -o uno uno.cpp cards.cpp players.cpp colors.cpp
 
