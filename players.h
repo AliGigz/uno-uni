@@ -6,10 +6,13 @@
 class Player
 {
 	std::vector<Card> Cards;
-	int CardCount = 0;
+	int CardsCount = 0;
 	public:
 		void addCard(std::vector<Card>*);
-		void removeCard(Card*, std::vector<Card>*);
+		void removeCard(int, std::vector<Card>*);
 		void showCards();
+		bool hasCards();
+		int getCardsCount();
+		Card getCard(int);
 };
 

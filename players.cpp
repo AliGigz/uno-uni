@@ -12,25 +12,23 @@ void Player::addCard(std::vector<Card>* deck)
 	int index = rand() % deck->size();
 	this->Cards.push_back((*deck)[index]);
 	deck->erase(deck->begin() + index);
-	this->CardCount++;
+	this->CardsCount++;
 }
-void Player::removeCard(Card* card, std::vector<Card>* deck)
+void Player::removeCard(int index, std::vector<Card>* deck)
 {
-	for (int i = 0; i < this->CardCount; i++)
-		if ( (this->Cards[i].getNumber() == card->getNumber()) && (this->Cards[i].getColor() == card->getColor()) )
-		{
-			this->Cards.erase(this->Cards.begin() + i);
-			deck->push_back(Card(card->getNumber(), card->getColor()));
-		}
-	this->CardCount--;
+	Card card = this->Cards[index];
+	deck->push_back(Card(card.getNumber(), card.getColor()));
+	this->Cards.erase(this->Cards.begin() + index);
+	this->CardsCount--;
 }
 
 void Player::showCards()
 {
+	int i = 1;
 	for (Card c : this->Cards)
 	{
+		std::cout << i << ": ";
 		std::string text = "";
-		text = c.getColor() + " ";
 		if (c.getNumber() >= 10)
 			text += c.getAction();
 		else
@@ -38,6 +36,22 @@ void Player::showCards()
 		changeTextColor(text, c.getColor());
 		std::cout << text;
 		std::cout << std::endl;
+		i++;
 	}
+}
+
+bool Player::hasCards()
+{
+	return (this->Cards.size() != 0);
+}
+
+int Player::getCardsCount()
+{
+	return this->CardsCount;
+}
+
+Card Player::getCard(int index)
+{
+	return this->Cards[index - 1];
 }
 
