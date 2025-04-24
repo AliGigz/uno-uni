@@ -84,7 +84,7 @@ int main()
 			if (option > players[turn].getCardsCount())
 				cout << "\033[31mnot a valid option!\033[0m" << endl;
 			else if (!isCardValid(players[turn].getCard(option), currentCardOnTable, tableColor))
-				cout << "\033[31card must have the same color as the card on the table!\033[0m" << endl;
+				cout << "\033[31mcard must have the same color or number as the card on the table!\033[0m" << endl;
 		} while ( (option > players[turn].getCardsCount()) || (!isCardValid(players[turn].getCard(option), currentCardOnTable, tableColor)));
 
 		if (option != 0)
@@ -111,11 +111,13 @@ int main()
 				{
 					players[turn+1].addCard(&deck);
 					players[turn+1].addCard(&deck);
+					turn++;
 				}
 				else
 				{
 					players[turn-1].addCard(&deck);
 					players[turn-1].addCard(&deck);
+					turn--;
 				}
 			}
 			else if ( (currentCardOnTable.getAction() == "wild") || (currentCardOnTable.getAction() == "wild draw four"))
@@ -135,6 +137,7 @@ int main()
 						players[turn+1].addCard(&deck);
 						players[turn+1].addCard(&deck);
 						players[turn+1].addCard(&deck);
+						turn++;
 					}
 					else
 					{
@@ -142,6 +145,7 @@ int main()
 						players[turn-1].addCard(&deck);
 						players[turn-1].addCard(&deck);
 						players[turn-1].addCard(&deck);
+						turn--;
 					}
 				}
 			}
