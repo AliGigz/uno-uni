@@ -24,6 +24,16 @@ bool isColorIn(string color)
 			return true;
 	return false;
 }
+bool isCardValid(Card trownCard, Card currentCardOnTable, string tableColor)
+{
+	if (trownCard.getColor() == "none")
+		return true;
+	if (trownCard.getColor() == tableColor)
+		return true;
+	if (trownCard.getNumber() == currentCardOnTable.getNumber())
+		return true;
+	return false;
+}
 
 int main()
 {
@@ -72,52 +82,33 @@ int main()
 				break;
 			}
 			if (option > players[turn].getCardsCount())
-				cout << "\033[31mnot a valid option!\033[0m";
-			else if ( (players[turn].getCard(option).getColor() != "none") && (players[turn].getCard(option).getColor() != tableColor) )
-				cout << "\033[31card must have the same color as the card on the table!\033[0m";
-		} while ( (option > players[turn].getCardsCount()) || ( (players[turn].getCard(option).getColor() != "none") && (players[turn].getCard(option).getColor() != tableColor) ));
+				cout << "\033[31mnot a valid option!\033[0m" << endl;
+			else if (!isCardValid(players[turn].getCard(option), currentCardOnTable, tableColor))
+				cout << "\033[31card must have the same color as the card on the table!\033[0m" << endl;
+		} while ( (option > players[turn].getCardsCount()) || (!isCardValid(players[turn].getCard(option), currentCardOnTable, tableColor)));
 
-		currentCardOnTable = players[turn].getCard(option);
-		tableColor = currentCardOnTable.getColor();
-		players[turn].removeCard(option, &deck);
+		if (option != 0)
+		{
+			currentCardOnTable = players[turn].getCard(option);
+			tableColor = currentCardOnTable.getColor();
+			players[turn].removeCard(option, &deck);
 
-		if (currentCardOnTable.getAction() == "reverse")
-			order = 1;
-		else if (currentCardOnTable.getAction() == "skip")
-		{
-			if (order == 0)
-				turn++;
-			else
-				turn--;
-		}
-		else if (currentCardOnTable.getAction() == "draw two")
-		{
-			if (order == 0)
+			if (currentCardOnTable.getAction() == "reverse")
+				if (order == 0)
+					order = 1;
+				else
+					order = 0;
+			else if (currentCardOnTable.getAction() == "skip")
 			{
-				players[turn+1].addCard(&deck);
-				players[turn+1].addCard(&deck);
+				if (order == 0)
+					turn++;
+				else
+					turn--;
 			}
-			else
-			{
-				players[turn-1].addCard(&deck);
-				players[turn-1].addCard(&deck);
-			}
-		}
-		else if ( (currentCardOnTable.getAction() == "wild") || (currentCardOnTable.getAction() == "wild draw four"))
-		{
-			do
-			{
-				cout << "choose a color (red | green | yellow | blue): ";
-				cin >> tableColor;
-				if (!isColorIn(tableColor))
-					cout << "\033[31mnot a valid color!\033[0m" << endl;
-			}while (!isColorIn(tableColor));
-			if (currentCardOnTable.getAction() == "wild draw four")
+			else if (currentCardOnTable.getAction() == "draw two")
 			{
 				if (order == 0)
 				{
-					players[turn+1].addCard(&deck);
-					players[turn+1].addCard(&deck);
 					players[turn+1].addCard(&deck);
 					players[turn+1].addCard(&deck);
 				}
@@ -125,19 +116,49 @@ int main()
 				{
 					players[turn-1].addCard(&deck);
 					players[turn-1].addCard(&deck);
-					players[turn-1].addCard(&deck);
-					players[turn-1].addCard(&deck);
+				}
+			}
+			else if ( (currentCardOnTable.getAction() == "wild") || (currentCardOnTable.getAction() == "wild draw four"))
+			{
+				do
+				{
+					cout << "choose a color (red | green | yellow | blue): ";
+					cin >> tableColor;
+					if (!isColorIn(tableColor))
+						cout << "\033[31mnot a valid color!\033[0m" << endl;
+				}while (!isColorIn(tableColor));
+				if (currentCardOnTable.getAction() == "wild draw four")
+				{
+					if (order == 0)
+					{
+						players[turn+1].addCard(&deck);
+						players[turn+1].addCard(&deck);
+						players[turn+1].addCard(&deck);
+						players[turn+1].addCard(&deck);
+					}
+					else
+					{
+						players[turn-1].addCard(&deck);
+						players[turn-1].addCard(&deck);
+						players[turn-1].addCard(&deck);
+						players[turn-1].addCard(&deck);
+					}
 				}
 			}
 		}
-		if (order == 0)
-			turn++;
-		else
-			turn--;
-		if ( (turn == 4) || (turn == -1) )
-			turn = 0;
-
 		setWinner(players);
+		if (order == 0)
+		{
+			turn++;
+			if (turn == 4)
+				turn = 0;
+		}
+		else
+		{
+			turn--;
+			if (turn == -1)
+				turn = 3;
+		}
 	} while (winner == "");
 	cout << "winner is " << (turn + 1) << endl;
 	return 0;

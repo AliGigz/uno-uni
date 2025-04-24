@@ -19,6 +19,7 @@ void Player::addCard(std::vector<Card>* deck)
 }
 void Player::removeCard(int index, std::vector<Card>* deck)
 {
+	index--;
 	Card card = this->Cards[index];
 	deck->push_back(Card(card.getNumber(), card.getColor()));
 	this->Cards.erase(this->Cards.begin() + index);
