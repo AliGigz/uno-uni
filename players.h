@@ -14,5 +14,11 @@ class Player
 		bool hasCards();
 		int getCardsCount();
 		Card getCard(int);
+		bool hasCertainColorCard(std::string);
+		int getCertainColorCardIndex(std::string);
+		bool hasCertainNumberCard(int);
+		int getCertainNumberCardIndex(int);
+		bool hasWildCard();
+		int getWildCardIndex();
 };
 

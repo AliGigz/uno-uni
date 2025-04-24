@@ -1,4 +1,5 @@
 #include <cstdlib>
+#include <ctime>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -8,8 +9,7 @@
 using namespace std;
 
 
-
-static string winner = "";
+static int winner = -1;
 static string colors[] = {"red", "green", "blue", "yellow"};
 void setWinner(Player players[])
 {
@@ -34,6 +34,16 @@ bool isCardValid(Card trownCard, Card currentCardOnTable, string tableColor)
 		return true;
 	return false;
 }
+void changeTableColor(string &tableColor)
+{
+	do
+	{
+		cout << "choose a color (red | green | blue | yellow): ";
+		cin >> tableColor;
+		if (!isColorIn(tableColor))
+			cout << "\033[31mnot a valid color!\033[0m" << endl;
+	} while (!isColorIn(tableColor));
+}
 
 int main()
 {
@@ -43,6 +53,7 @@ int main()
 	 * turn -> player's turn
 	 * order -> clockwise 0 and anticlockwise 1
 	*/
+	srand((unsigned int)time(NULL));
 	vector<Card> deck;
 	Player players[4] = {Player(), Player(), Player(), Player()};
 	int turn = 0, order = 0;
@@ -61,47 +72,84 @@ int main()
 	currentCardOnTable = deck[index];
 	deck.erase(deck.begin() + index);
 	tableColor = currentCardOnTable.getColor();
+	if ( (currentCardOnTable.getAction() == "wild") || currentCardOnTable.getAction() == "wild draw four" )
+		changeTableColor(tableColor);
 	do
 	{
-		// show player cards
-		players[turn].showCards();
-		// show the card which is on the table
-		string text = "";
-		if (currentCardOnTable.getNumber() >= 10)
-			text += currentCardOnTable.getAction();
-		else
-			text += to_string(currentCardOnTable.getNumber());
-		changeTextColor(text, tableColor);
-		cout << "current card on the table: " + text;
-
-		// ask for a card to be played
-		do
+		if (turn == 0)
 		{
-			cout << endl << "player " << (turn + 1) << " -> " << "choose a card (0 to pick a card): ";
-			cin >> option;
-			if (option == 0)
-			{
-				players[turn].addCard(&deck);
-				break;
-			}
-			if (option > players[turn].getCardsCount())
-				cout << "\033[31mnot a valid option!\033[0m" << endl;
-			else if (!isCardValid(players[turn].getCard(option), currentCardOnTable, tableColor))
-				cout << "\033[31mcard must have the same color or number as the card on the table!\033[0m" << endl;
-		} while ( (option > players[turn].getCardsCount()) || (!isCardValid(players[turn].getCard(option), currentCardOnTable, tableColor)));
+			cout << endl;
+			players[turn].showCards();
+			
+			// show current card
+			string text = "";
+			if (currentCardOnTable.getNumber() >= 10)
+				text += currentCardOnTable.getAction();
+			else
+				text += to_string(currentCardOnTable.getNumber());
+			changeTextColor(text, tableColor);
+			cout << "current card on the table: " << text << endl;
 
-		if (option != 0)
+			// show players cards
+			for (int i = 1; i < 4; i++)
+				cout << "player " << i + 1 <<  " : " << players[i].getCardsCount() << "\t"; 
+			cout << endl;
+
+			do
+			{
+				cout << "choose an option (0 to pick a card): ";
+				cin >> option;
+
+				if (option == 0)
+					break;
+				if (option > players[turn].getCardsCount())
+					cout << "\033[31mnot a valid option!\033[0m" << endl;
+				else if (!isCardValid(players[turn].getCard(option), currentCardOnTable, tableColor))
+					cout << "\033[31mcard must have the same color or number as the card on the table!!\033[0m" << endl;
+			} while(!isCardValid(players[turn].getCard(option), currentCardOnTable, tableColor));
+			cout << endl;
+		}
+		else
+		{
+			if (players[turn].hasCertainColorCard(tableColor))
+				option = players[turn].getCertainColorCardIndex(tableColor) + 1;
+			else if (players[turn].hasCertainNumberCard(currentCardOnTable.getNumber()))
+				option = players[turn].getCertainNumberCardIndex(currentCardOnTable.getNumber()) + 1;
+			else if (players[turn].hasWildCard())
+				option = players[turn].getWildCardIndex() + 1;
+			else
+				option = 0;
+
+			// show the card that the player has played
+			if (option != 0)
+			{
+				string played = "";
+				Card playedCard = players[turn].getCard(option);
+				if (playedCard.getNumber() >= 10)
+					played += playedCard.getAction();
+				else
+					played += to_string(playedCard.getNumber());
+				changeTextColor(played, playedCard.getColor());
+
+				cout << "player " << turn + 1 << " played " << played << endl;
+			}
+			else
+				cout << "player " << turn + 1 << " picked a card " << endl;
+		}
+		if (option == 0)
+			players[turn].addCard(&deck);
+		else
 		{
 			currentCardOnTable = players[turn].getCard(option);
 			tableColor = currentCardOnTable.getColor();
 			players[turn].removeCard(option, &deck);
-
-			// do the action cards
 			if (currentCardOnTable.getAction() == "reverse")
+			{
 				if (order == 0)
 					order = 1;
 				else
 					order = 0;
+			}
 			else if (currentCardOnTable.getAction() == "skip")
 			{
 				if (order == 0)
@@ -113,65 +161,77 @@ int main()
 			{
 				if (order == 0)
 				{
-					players[turn+1].addCard(&deck);
-					players[turn+1].addCard(&deck);
+					int next = turn + 1;
+					if (next >= 4)
+						next = 0;
+					for (int i = 0; i < 2; i++)
+						players[next].addCard(&deck);
 					turn++;
 				}
 				else
 				{
-					players[turn-1].addCard(&deck);
-					players[turn-1].addCard(&deck);
+					int next = turn - 1;
+					if (next <= -1)
+						next = 3;
+					for (int i = 0; i < 2; i++)
+						players[next].addCard(&deck);
 					turn--;
 				}
 			}
-			else if ( (currentCardOnTable.getAction() == "wild") || (currentCardOnTable.getAction() == "wild draw four"))
+			else if ( (currentCardOnTable.getAction() == "wild") || (currentCardOnTable.getAction() == "wild draw four") ) 
 			{
-				do
+				if (turn == 0)
 				{
-					cout << "choose a color (red | green | yellow | blue): ";
-					cin >> tableColor;
-					if (!isColorIn(tableColor))
-						cout << "\033[31mnot a valid color!\033[0m" << endl;
-				}while (!isColorIn(tableColor));
+					changeTableColor(tableColor);
+				}
+				else
+				{
+					if (players[turn].hasCertainColorCard("red")) tableColor = "red";
+					else if (players[turn].hasCertainColorCard("blue")) tableColor = "blue";
+					else if (players[turn].hasCertainColorCard("green")) tableColor = "blue";
+					else if (players[turn].hasCertainColorCard("yellow")) tableColor = "yellow";
+				}
 				if (currentCardOnTable.getAction() == "wild draw four")
 				{
 					if (order == 0)
 					{
-						players[turn+1].addCard(&deck);
-						players[turn+1].addCard(&deck);
-						players[turn+1].addCard(&deck);
-						players[turn+1].addCard(&deck);
+						int next = turn + 1;
+						if (next >= 4)
+							next = 0;
+						for (int i = 0; i < 4; i++)
+							players[next].addCard(&deck);
 						turn++;
 					}
 					else
 					{
-						players[turn-1].addCard(&deck);
-						players[turn-1].addCard(&deck);
-						players[turn-1].addCard(&deck);
-						players[turn-1].addCard(&deck);
+						int next = turn - 1;
+						if (next <= -1)
+							next = 3;
+						for (int i = 0; i < 4; i++)
+							players[next].addCard(&deck);
 						turn--;
 					}
 				}
 			}
 		}
-
 		setWinner(players);
-		// change turn
+		if (winner != -1)
+			break;
 		if (order == 0)
 		{
 			turn++;
-			if (turn == 4)
+			if (turn >= 4)
 				turn = 0;
 		}
 		else
 		{
 			turn--;
-			if (turn == -1)
+			if (turn <= -1)
 				turn = 3;
 		}
-	} while (winner == "");
+	} while (winner == -1);
 
-	cout << "winner is " << (turn + 1) << endl;
+	cout << "winner is " << winner + 1 << endl;
 	return 0;
 }
 

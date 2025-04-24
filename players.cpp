@@ -1,4 +1,5 @@
 #include <cstdlib>
+#include <ctime>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -9,6 +10,7 @@
 
 void Player::addCard(std::vector<Card>* deck)
 {
+	srand((unsigned int)time(NULL));
 	int index = rand() % deck->size();
 	this->Cards.push_back((*deck)[index]);
 	deck->erase(deck->begin() + index);
@@ -57,5 +59,64 @@ int Player::getCardsCount()
 Card Player::getCard(int index)
 {
 	return this->Cards[index - 1];
+}
+
+bool Player::hasCertainColorCard(std::string color)
+{
+	for (Card c : this->Cards)
+		if (c.getColor() == color)
+			return true;
+	return false;
+}
+
+int Player::getCertainColorCardIndex(std::string color)
+{
+	int index;
+	for (int i = 0; i < this->Cards.size(); i++)
+		if (this->Cards[i].getColor() == color)
+		{
+			index = i;
+			break;
+		}
+	return index;
+}
+
+bool Player::hasCertainNumberCard(int number)
+{
+	for (Card c : this->Cards)
+		if (c.getNumber() == number)
+			return true;
+	return false;
+}
+int Player::getCertainNumberCardIndex(int number)
+{
+	int index;
+	for (int i = 0; i < this->Cards.size(); i++)
+		if (this->Cards[i].getNumber() == number)
+		{
+			index = i;
+			break;
+		}
+	return index;
+}
+
+bool Player::hasWildCard()
+{
+	for (Card c : this->Cards)
+		if ( (c.getAction() == "wild") || (c.getAction() == "wild draw four") )
+			return true;
+	return false;
+}
+
+int Player::getWildCardIndex()
+{
+	int index;
+	for (int i = 0; i < this->Cards.size(); i++)
+		if ( (this->Cards[i].getAction() == "wild") || (this->Cards[i].getAction() == "wild draw four") )
+		{
+			index = i;
+			break;
+		}
+	return index;
 }
 
