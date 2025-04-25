@@ -20,5 +20,6 @@ class Player
 		int getCertainNumberCardIndex(int);
 		bool hasWildCard();
 		int getWildCardIndex();
+		void sortCards();
 };
 

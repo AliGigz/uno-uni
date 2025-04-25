@@ -10,18 +10,22 @@
 
 void Player::addCard(std::vector<Card>* deck)
 {
+	// get a random card from the deck and remove it from the deck itself
 	srand((unsigned int)time(NULL));
 	int index = rand() % deck->size();
 	this->Cards.push_back((*deck)[index]);
 	deck->erase(deck->begin() + index);
 	this->CardsCount++;
+
 	// refill the deck if it's empty
 	if (deck->size() == 0)
 		fillDeck(deck);
+
 }
 void Player::removeCard(int index, std::vector<Card>* deck)
 {
-	index--;
+	index--; // cause the index which is given is one more (option starts from 1)
+	// Remove the card and put it back to the deck
 	Card card = this->Cards[index];
 	deck->push_back(Card(card.getNumber(), card.getColor()));
 	this->Cards.erase(this->Cards.begin() + index);
@@ -30,6 +34,8 @@ void Player::removeCard(int index, std::vector<Card>* deck)
 
 void Player::showCards()
 {
+	this->sortCards(); // sort the cards before showing them
+	// show the cards from 1 and also change the colors
 	int i = 1;
 	for (Card c : this->Cards)
 	{
@@ -118,5 +124,18 @@ int Player::getWildCardIndex()
 			break;
 		}
 	return index;
+}
+
+void Player::sortCards()
+{
+	std::string colors[] = {"red", "green", "blue", "yellow"};
+	std::vector<Card> cards;
+	// the sorting should be -> red green blue yellow
+	for (std::string color : colors)
+		for (Card c : this->Cards)
+			if (c.getColor() == color)
+				cards.push_back(c);
+
+	this->Cards = cards;
 }
 
