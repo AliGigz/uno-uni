@@ -3,6 +3,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <unistd.h>
 #include "cards.h"
 #include "players.h"
 #include "colors.h"
@@ -159,58 +160,71 @@ int main()
 			}
 			else if (currentCardOnTable.getAction() == "draw two")
 			{
+				int next = 0;
 				if (order == 0)
 				{
-					int next = turn + 1;
+					next = turn + 1;
 					if (next >= 4)
-						next = 0;
+						next = 0, turn = 0;
+					else
+						turn++;
 					for (int i = 0; i < 2; i++)
 						players[next].addCard(&deck);
-					turn++;
 				}
 				else
 				{
-					int next = turn - 1;
+					next = turn - 1;
 					if (next <= -1)
-						next = 3;
+						next = 3, turn = 3;
+					else
+						turn--;
 					for (int i = 0; i < 2; i++)
 						players[next].addCard(&deck);
-					turn--;
 				}
+				cout << "player " << next + 1 << " lost it's turn" << endl;
 			}
 			else if ( (currentCardOnTable.getAction() == "wild") || (currentCardOnTable.getAction() == "wild draw four") ) 
 			{
 				if (turn == 0)
 				{
 					changeTableColor(tableColor);
+					cout << endl;
 				}
 				else
 				{
 					if (players[turn].hasCertainColorCard("red")) tableColor = "red";
 					else if (players[turn].hasCertainColorCard("blue")) tableColor = "blue";
-					else if (players[turn].hasCertainColorCard("green")) tableColor = "blue";
+					else if (players[turn].hasCertainColorCard("green")) tableColor = "green";
 					else if (players[turn].hasCertainColorCard("yellow")) tableColor = "yellow";
+
+					string txt = tableColor;
+					changeTextColor(txt, tableColor);
+					cout << "player " << turn + 1 << " changed table color to " << txt << endl;
 				}
 				if (currentCardOnTable.getAction() == "wild draw four")
 				{
+					int next = 0;
 					if (order == 0)
 					{
-						int next = turn + 1;
+						next = turn + 1;
 						if (next >= 4)
-							next = 0;
+							next = 0, turn = 0;
+						else
+							turn++;
 						for (int i = 0; i < 4; i++)
 							players[next].addCard(&deck);
-						turn++;
 					}
 					else
 					{
-						int next = turn - 1;
+						next = turn - 1;
 						if (next <= -1)
-							next = 3;
+							next = 3, turn = 3;
+						else
+							turn--;
 						for (int i = 0; i < 4; i++)
 							players[next].addCard(&deck);
-						turn--;
 					}
+					cout << "player " << next + 1 << " lost it's turn" << endl;
 				}
 			}
 		}
@@ -229,6 +243,7 @@ int main()
 			if (turn <= -1)
 				turn = 3;
 		}
+		sleep(1); // take one second for player to see whats happening
 	} while (winner == -1);
 
 	cout << "winner is " << winner + 1 << endl;
