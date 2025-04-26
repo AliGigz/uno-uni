@@ -128,7 +128,7 @@ int Player::getWildCardIndex()
 
 void Player::sortCards()
 {
-	std::string colors[] = {"red", "green", "blue", "yellow"};
+	std::string colors[] = {"red", "green", "blue", "yellow", "none"};
 	std::vector<Card> cards;
 	// the sorting should be -> red green blue yellow
 	for (std::string color : colors)
