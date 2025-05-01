@@ -12,3 +12,10 @@ void changeTextColor(std::string &txt, std::string color)
 	txt += "\033[0m";
 }
 
+std::string createColoredText(std::string text, std::string color)
+{
+	std::string result = text;
+	changeTextColor(result, color);
+	return result;
+}
+

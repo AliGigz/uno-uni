@@ -42,7 +42,7 @@ void changeTableColor(string &tableColor)
 		cout << "choose a color (red | green | blue | yellow): ";
 		cin >> tableColor;
 		if (!isColorIn(tableColor))
-			cout << "\033[31mnot a valid color!\033[0m" << endl;
+			cout << createColoredText("not a valid color!", "red") << endl;
 	} while (!isColorIn(tableColor));
 }
 
@@ -104,9 +104,9 @@ int main()
 				if (option == 0)
 					break;
 				if (option > players[turn].getCardsCount())
-					cout << "\033[31mnot a valid option!\033[0m" << endl;
+					cout << createColoredText("not a valid option", "red") << endl;
 				else if (!isCardValid(players[turn].getCard(option), currentCardOnTable, tableColor))
-					cout << "\033[31mcard must have the same color or number as the card on the table!!\033[0m" << endl;
+					cout << createColoredText("card must have the same color or number as the card on the table", "red") << endl;
 			} while(!isCardValid(players[turn].getCard(option), currentCardOnTable, tableColor));
 			cout << endl;
 		}
